@@ -1,16 +1,89 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Vérification de Ticket</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scanner de Tickets</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      background-color: #333;
+      color: white;
+      padding: 1em;
+    }
+    video {
+      width: 100%;
+      max-width: 400px;
+      margin-top: 1em;
+    }
+    #result {
+      font-size: 1.5em;
+      margin-top: 20px;
+      padding: 10px;
+    }
+    .valid {
+      color: green;
+    }
+    .invalid {
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <h2>🎫 Vérifier un Ticket</h2>
-  <form method="POST" action="verify.php">
-    <label for="hash">Entrez le code du ticket :</label><br>
-    <input type="text" name="hash" id="hash" required>
-    <button type="submit">Vérifier</button>
-  </form>
+  <h1>Scanner de Ticket</h1>
+  <video id="preview"></video>
+  <div id="result">Scanner un QR code</div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script>
+    // Liste des tickets valides
+    const ticketsValides = [
+      "ticket_001",
+      "ticket_002",
+      "ticket_003",
+      "ticket_ABC",
+      "ticket_XYZ"
+    ];
+
+    const dejaScannes = new Set();
+
+    const resultEl = document.getElementById("result");
+
+    function afficherRésultat(message, estValide) {
+      resultEl.textContent = message;
+      resultEl.className = estValide ? "valid" : "invalid";
+    }
+
+    function gererScan(decodedText) {
+      if (dejaScannes.has(decodedText)) {
+        afficherRésultat("❌ Ticket déjà utilisé !", false);
+      } else if (ticketsValides.includes(decodedText)) {
+        dejaScannes.add(decodedText);
+        afficherRésultat("✅ Ticket VALIDE !", true);
+      } else {
+        afficherRésultat("🚫 Ticket NON VALIDE !", false);
+      }
+    }
+
+    const html5QrCode = new Html5Qrcode("preview");
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        const cameraId = devices[0].id;
+        html5QrCode.start(
+          cameraId,
+          { fps: 10, qrbox: 250 },
+          gererScan
+        );
+      }
+    }).catch(err => {
+      resultEl.textContent = "Erreur d’accès à la caméra : " + err;
+    });
+  </script>
 </body>
 </html>
