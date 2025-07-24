@@ -59,12 +59,29 @@
       if (scannerStarted) return;
       document.getElementById('reader').style.display = 'block';
       html5QrCode = new Html5Qrcode("reader");
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        onScanSuccess
-      );
-      scannerStarted = true;
+      Html5Qrcode.getCameras().then(cameras => {
+        if (cameras && cameras.length) {
+          // Try to select the rear camera if available
+          const rearCamera = cameras.find(cam => cam.label.toLowerCase().includes('back') || cam.label.toLowerCase().includes('rear')) || cameras[0];
+          html5QrCode.start(
+            rearCamera.id,
+            { fps: 10, qrbox: 250 },
+            onScanSuccess
+          ).catch(err => {
+            document.getElementById('result').innerText = 'Erreur accès caméra: ' + err;
+            document.getElementById('result').className = 'invalid';
+            document.getElementById('reader').style.display = 'none';
+            scannerStarted = false;
+          });
+          scannerStarted = true;
+        } else {
+          document.getElementById('result').innerText = 'Aucune caméra détectée';
+          document.getElementById('result').className = 'invalid';
+        }
+      }).catch(err => {
+        document.getElementById('result').innerText = 'Erreur détection caméra: ' + err;
+        document.getElementById('result').className = 'invalid';
+      });
     });
   </script>
 </body>
