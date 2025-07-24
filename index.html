@@ -12,20 +12,18 @@
         <div id="reader" style="width: 300px;"></div>
         <div id="result">En attente du scan...</div>
 
-        <script>
-            const camera = document.getElementById("camera");
-            const ShowBtn = document.getElementById("showCamera");
-
-            async function showCamera() {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({video: true});
-                    camera.srcObject = stream;
-                } catch (error) {
-                    console.error("Erreur Accès Camera", error);
-                }
-            }
-
-            ShowBtn.addEventListener("click", () => showCamera());
-        </script>
+<script>
+const camera = document.getElementById("camera");
+const showBtn = document.getElementById("show-amera");
+async function showCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        camera.srcObject = stream;
+    } catch (error) {
+        console.error("Erreur Accès Camera", error);
+    }
+}
+ShowBtn.addEventListener("click", () => showCamera());
+</script>
     </body>
 </html>
