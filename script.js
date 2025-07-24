@@ -12,4 +12,4 @@ async function showCamera() {
         })
 }
 
-showBtn.addEventListener("click"), () => showCamera();
+showBtn.addEventListener("click"), () => show-camera();
