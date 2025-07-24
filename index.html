@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Scanner de Ticket</title>
+  <meta charset="UTF-8">
+  <title>Validation de Ticket</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f0f0;
+      padding: 20px;
     }
-    h1 {
-      background-color: #333;
-      color: white;
-      margin: 0;
-      padding: 1em;
-    }
-    #reader {
-      width: 100%;
-      max-width: 400px;
-      margin: 20px auto;
+    #qr-reader {
+      width: 300px;
+      margin: auto;
     }
     #result {
-      font-size: 1.5em;
       margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
     }
     .valid {
       color: green;
@@ -36,72 +28,49 @@
   </style>
 </head>
 <body>
-
-  <h1>Scanner de Ticket</h1>
-  <div id="reader"></div>
-  <div id="result">Scannez un QR code...</div>
-
-  <!-- Librairie HTML5 QR Code -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.9/html5-qrcode.min.js"></script>
+  <h1>Scanner votre Ticket</h1>
+  <div id="qr-reader"></div>
+  <div id="result"></div>
 
   <script>
-    const ticketsValides = [
-      "ticket_001", "ticket_002", "ticket_ABC", "ticket_003", "ticket_XYZ"
-    ];
-    const dejaScannes = new Set();
-    const resultEl = document.getElementById("result");
+    // Liste des tickets valides
+    const validTickets = ["ticket_001", "ticket_002", "ticket_003"];
+    const scannedTickets = new Set();
 
-    function afficherMessage(message, isValid) {
-      resultEl.textContent = message;
-      resultEl.className = isValid ? "valid" : "invalid";
-    }
+    function onScanSuccess(qrCodeMessage) {
+      const resultDiv = document.getElementById("result");
 
-    function traiterQRCode(decodedText, decodedResult) {
-      if (dejaScannes.has(decodedText)) {
-        afficherMessage("❌ Ticket déjà utilisé", false);
-      } else if (ticketsValides.includes(decodedText)) {
-        dejaScannes.add(decodedText);
-        afficherMessage("✅ Ticket VALIDE", true);
-      } else {
-        afficherMessage("🚫 Ticket NON VALIDE", false);
+      if (!validTickets.includes(qrCodeMessage)) {
+        resultDiv.textContent = `❌ Ticket invalide (${qrCodeMessage})`;
+        resultDiv.className = "invalid";
+        return;
       }
-    }
 
-    const html5QrCode = new Html5Qrcode("reader");
-
-    Html5Qrcode.getCameras().then(cameras => {
-      if (cameras && cameras.length) {
-        html5QrCode.start(
-          cameras[0].id,
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-          },
-          traiterQRcode
-        );
-      } else {
-        resultEl.textContent = "❌ Aucune caméra détectée";
+      if (scannedTickets.has(qrCodeMessage)) {
+        resultDiv.textContent = `❌ Ticket déjà scanné (${qrCodeMessage})`;
+        resultDiv.className = "invalid";
+        return;
       }
-    }).catch(err => {
-      resultEl.textContent = "Erreur accès caméra : " + err;
-    });
 
-    function traiterQRcode(text, result) {
-      console.log("Scanné :", text);
-      traiterQRcodeLogic(text);
+      scannedTickets.add(qrCodeMessage);
+      resultDiv.textContent = `✅ Ticket validé : ${qrCodeMessage}`;
+      resultDiv.className = "valid";
     }
 
-    function traiterQRcodeLogic(decodedText) {
-      if (dejaScannes.has(decodedText)) {
-        afficherMessage("❌ Ticket déjà utilisé", false);
-      } else if (ticketsValides.includes(decodedText)) {
-        dejaScannes.add(decodedText);
-        afficherMessage("✅ Ticket VALIDE", true);
-      } else {
-        afficherMessage("🚫 Ticket NON VALIDE", false);
-      }
+    function onScanFailure(error) {
+      // Erreurs ignorées volontairement (ex: échec temporaire du scan)
     }
+
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    html5QrCode.start(
+      { facingMode: "environment" }, // caméra arrière
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      onScanSuccess,
+      onScanFailure
+    );
   </script>
-
 </body>
 </html>
