@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scanner de Tickets</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; text-align: center; background: #f0f0f0; }
+    h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+    #result { margin-top: 1rem; font-size: 1.3rem; font-weight: bold; }
+    #result.valid { color: green; }
+    #result.invalid { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Scanner de Tickets</h1>
+  <div id="reader" style="width: 300px; margin: auto;"></div>
+  <div id="result">En attente du scan...</div>
+
+  <script>
+    const validTickets = new Set();
+    fetch('tickets.json')
+      .then(response => response.json())
+      .then(data => data.forEach(t => validTickets.add(t)))
+      .catch(err => console.error("Erreur chargement JSON", err));
+
+    const scannedTickets = new Set();
+
+    function onScanSuccess(decodedText) {
+      if (scannedTickets.has(decodedText)) {
+        document.getElementById('result').innerText = 'Ticket déjà scanné';
+        document.getElementById('result').className = 'invalid';
+        return;
+      }
+      scannedTickets.add(decodedText);
+
+      if (validTickets.has(decodedText)) {
+        document.getElementById('result').innerText = '✅ Ticket Valide';
+        document.getElementById('result').className = 'valid';
+      } else {
+        document.getElementById('result').innerText = '❌ Ticket Invalide';
+        document.getElementById('result').className = 'invalid';
+      }
+    }
+
+    new Html5Qrcode("reader").start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    );
+  </script>
+</body>
+</html>
