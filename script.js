@@ -1,11 +1,15 @@
 const camera = document.getElementById("camera");
 const showBtn = document.getElementById("show-camera");
+
+
 async function showCamera() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({video: true});
-        camera.srcObject = stream;
-    } catch (error) {
-        console.error("Erreur Accès Camera", error);
-    }
+    navigator.mediaDevices.getUserMedia({video: true})
+        .then(stream => {
+            camera.srcObject = stream;
+        })
+        .catch(error => {
+            console.error("there is", error)
+        })
 }
-ShowBtn.addEventListener("click", () => show-camera());
+
+showBtn.addEventListener("click"), () => showCamera();
