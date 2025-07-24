@@ -1,15 +1,30 @@
-const camera = document.getElementById("camera");
-const showBtn = document.getElementById("showBtn");
+let ticketsValidés = JSON.parse(localStorage.getItem("ticketsValidés") || "[]");
 
+function validerTicket() {
+  const ticketId = document.getElementById("ticketInput").value.trim();
+  if (!ticketId) {
+    return afficher("⛔ Veuillez entrer un ID de ticket", "red");
+  }
 
-async function showBtn() {
-    navigator.mediaDevices.getUserMedia({video: true})
-        .then(stream => {
-            camera.srcObject = stream;
-        })
-        .catch(error => {
-            console.error("there is", error)
-        })
+  fetch("tickets.json")
+    .then(res => res.json())
+    .then(data => {
+      const valides = data.valid_tickets;
+
+      if (!valides.includes(ticketId)) {
+        afficher("❌ Ticket NON VALIDE", "red");
+      } else if (ticketsValidés.includes(ticketId)) {
+        afficher("⚠️ Ticket DÉJÀ UTILISÉ", "orange");
+      } else {
+        ticketsValidés.push(ticketId);
+        localStorage.setItem("ticketsValidés", JSON.stringify(ticketsValidés));
+        afficher("✅ Ticket VALIDE", "green");
+      }
+    });
 }
 
-showBtn.addEventListener("click"), () => showBtn();
+function afficher(message, couleur) {
+  const statut = document.getElementById("status");
+  statut.innerText = message;
+  statut.style.color = couleur;
+}

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScannerApp</title>   
+  <meta charset="UTF-8">
+  <title>Vérification de Ticket</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body> 
-    <video src="camera" autoplay></video>
-
-    <button id="showBtn"> showBtn </button>
-        
-    <script src ="script.js"> </script>
-
+<body>
+  <h2>🎫 Vérifier un Ticket</h2>
+  <form method="POST" action="verify.php">
+    <label for="hash">Entrez le code du ticket :</label><br>
+    <input type="text" name="hash" id="hash" required>
+    <button type="submit">Vérifier</button>
+  </form>
 </body>
 </html>
