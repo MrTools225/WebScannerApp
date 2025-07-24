@@ -9,9 +9,7 @@
         <video src="camera" autoplay></video>
         <h1>Scanner de Tickets</h1>
         <button id="showCamera">Show camera</button>
-        <div id="reader" style="width: 300px;"></div>
-        <div id="result">En attente du scan...</div>
-
+        
 <script>
 const camera = document.getElementById("camera");
 const showBtn = document.getElementById("show-amera");
@@ -25,5 +23,8 @@ async function showCamera() {
 }
 ShowBtn.addEventListener("click", () => showCamera());
 </script>
+<div id="reader" style="width: 300px;"></div>
+        <div id="result">En attente du scan...</div>
+
     </body>
 </html>
