@@ -11,11 +11,14 @@
     #result { margin-top: 1rem; font-size: 1.3rem; font-weight: bold; }
     #result.valid { color: green; }
     #result.invalid { color: red; }
+    #reader { display: none; margin: auto; }
+    #scan-btn { padding: 10px 20px; font-size: 1rem; cursor: pointer; }
   </style>
 </head>
 <body>
   <h1>Scanner de Tickets</h1>
-  <div id="reader" style="width: 300px; margin: auto;"></div>
+  <button id="scan-btn">Scan</button>
+  <div id="reader" style="width: 300px;"></div>
   <div id="result">En attente du scan...</div>
 
   <script>
@@ -26,6 +29,8 @@
       .catch(err => console.error("Erreur chargement JSON", err));
 
     const scannedTickets = new Set();
+    let scannerStarted = false;
+    let html5QrCode;
 
     function onScanSuccess(decodedText) {
       if (scannedTickets.has(decodedText)) {
@@ -42,13 +47,25 @@
         document.getElementById('result').innerText = '❌ Ticket Invalide';
         document.getElementById('result').className = 'invalid';
       }
+      // Optionally stop scanner after a scan
+      if (html5QrCode) {
+        html5QrCode.stop();
+        document.getElementById('reader').style.display = 'none';
+        scannerStarted = false;
+      }
     }
 
-    new Html5Qrcode("reader").start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      onScanSuccess
-    );
+    document.getElementById('scan-btn').addEventListener('click', function() {
+      if (scannerStarted) return;
+      document.getElementById('reader').style.display = 'block';
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+      );
+      scannerStarted = true;
+    });
   </script>
 </body>
 </html>
