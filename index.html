@@ -1,17 +1,31 @@
 <!DOCTYPE html>
-<html lang="En">
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width", initial-scale="1.0">
-        <title> ScannnerAppp </title>   
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ScannerApp</title>   
     </head>
     <body> 
-        <video src="" id="camera" autoplay></video>
+        <video id="camera" autoplay></video>
         <h1>Scanner de Tickets</h1>
-  <button id="showCamera">Scan</button>
-  <div id="reader" style="width: 300px;"></div>
-  <div id="result">En attente du scan...</div>
+        <button id="showCamera">Scan</button>
+        <div id="reader" style="width: 300px;"></div>
+        <div id="result">En attente du scan...</div>
 
-  <script src="script.js"></script>
+        <script>
+            const camera = document.getElementById("camera");
+            const ShowBtn = document.getElementById("showCamera");
+
+            async function showCamera() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({video: true});
+                    camera.srcObject = stream;
+                } catch (error) {
+                    console.error("Erreur Accès Camera", error);
+                }
+            }
+
+            ShowBtn.addEventListener("click", () => showCamera());
+        </script>
     </body>
 </html>
