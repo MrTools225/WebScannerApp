@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Scanner de Tickets</title>
+  <title>Scanner de Ticket</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       text-align: center;
-      background-color: #f4f4f4;
       margin: 0;
       padding: 0;
+      background-color: #f0f0f0;
     }
     h1 {
       background-color: #333;
       color: white;
+      margin: 0;
       padding: 1em;
     }
-    video {
+    #reader {
       width: 100%;
       max-width: 400px;
-      margin-top: 1em;
+      margin: 20px auto;
     }
     #result {
       font-size: 1.5em;
       margin-top: 20px;
-      padding: 10px;
     }
     .valid {
       color: green;
@@ -36,54 +36,72 @@
   </style>
 </head>
 <body>
+
   <h1>Scanner de Ticket</h1>
-  <video id="preview"></video>
-  <div id="result">Scannerun QR code</div>
+  <div id="reader"></div>
+  <div id="result">Scannez un QR code...</div>
 
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- Librairie HTML5 QR Code -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.9/html5-qrcode.min.js"></script>
+
   <script>
-    // Liste des tickets valides
     const ticketsValides = [
-      "ticket_001",
-      "ticket_002",
-      "ticket_003",
-      "ticket_ABC",
-      "ticket_XYZ"
+      "ticket_001", "ticket_002", "ticket_ABC", "ticket_003", "ticket_XYZ"
     ];
-
     const dejaScannes = new Set();
-
     const resultEl = document.getElementById("result");
 
-    function afficherRésultat(message, estValide) {
+    function afficherMessage(message, isValid) {
       resultEl.textContent = message;
-      resultEl.className = estValide ? "valid" : "invalid";
+      resultEl.className = isValid ? "valid" : "invalid";
     }
 
-    function gererScan(decodedText) {
+    function traiterQRCode(decodedText, decodedResult) {
       if (dejaScannes.has(decodedText)) {
-        afficherRésultat("❌ Ticket déjà utilisé !", false);
+        afficherMessage("❌ Ticket déjà utilisé", false);
       } else if (ticketsValides.includes(decodedText)) {
         dejaScannes.add(decodedText);
-        afficherRésultat("✅ Ticket VALIDE !", true);
+        afficherMessage("✅ Ticket VALIDE", true);
       } else {
-        afficherRésultat("🚫 Ticket NON VALIDE !", false);
+        afficherMessage("🚫 Ticket NON VALIDE", false);
       }
     }
 
-    const html5QrCode = new Html5Qrcode("preview");
-    Html5Qrcode.getCameras().then(devices => {
-      if (devices && devices.length) {
-        const cameraId = devices[0].id;
+    const html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
         html5QrCode.start(
-          cameraId,
-          { fps: 10, qrbox: 250 },
-          gererScan
+          cameras[0].id,
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          traiterQRcode
         );
+      } else {
+        resultEl.textContent = "❌ Aucune caméra détectée";
       }
     }).catch(err => {
-      resultEl.textContent = "Erreur d’accès à la caméra : " + err;
+      resultEl.textContent = "Erreur accès caméra : " + err;
     });
+
+    function traiterQRcode(text, result) {
+      console.log("Scanné :", text);
+      traiterQRcodeLogic(text);
+    }
+
+    function traiterQRcodeLogic(decodedText) {
+      if (dejaScannes.has(decodedText)) {
+        afficherMessage("❌ Ticket déjà utilisé", false);
+      } else if (ticketsValides.includes(decodedText)) {
+        dejaScannes.add(decodedText);
+        afficherMessage("✅ Ticket VALIDE", true);
+      } else {
+        afficherMessage("🚫 Ticket NON VALIDE", false);
+      }
+    }
   </script>
+
 </body>
 </html>
