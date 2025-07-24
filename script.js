@@ -1,8 +1,8 @@
 const camera = document.getElementById("camera");
-const showBtn = document.getElementById("show-camera");
+const showBtn = document.getElementById("showBtn");
 
 
-async function showCamera() {
+async function showBtn() {
     navigator.mediaDevices.getUserMedia({video: true})
         .then(stream => {
             camera.srcObject = stream;
@@ -12,4 +12,4 @@ async function showCamera() {
         })
 }
 
-showBtn.addEventListener("click"), () => show-camera();
+showBtn.addEventListener("click"), () => showBtn();
