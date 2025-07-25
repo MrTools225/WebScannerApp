@@ -1,87 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scan Ticket</title>
+  <meta charset="UTF-8">
+  <title>Validation de Ticket</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 20px;
-      background-color: #f5f5f5;
     }
-    #reader {
+    #qr-reader {
       width: 300px;
       margin: auto;
     }
     #result {
       margin-top: 20px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
+      white-space: pre-line;
     }
-    button {
-      padding: 10px 20px;
-      margin-top: 20px;
-      font-size: 16px;
+    .valid {
+      color: green;
+    }
+    .invalid {
+      color: red;
     }
   </style>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
-  <h1>Scanner de Ticket</h1>
-  <div id="reader"></div>
+  <h1>Scanner votre Ticket</h1>
+  <div id="qr-reader"></div>
   <div id="result"></div>
-  <button id="scan-next" style="display:none;">Scanner un autre ticket</button>
 
   <script>
-    const ticketsValides = {
-      "ticket_001": null,
-      "ticket_002": null,
-      "ticket_003": null
-    };
+    // Liste des tickets valides (en texte simple)
+    const validTickets = [
+      "TICKET-001",
+      "cb7e55bc60d6bf55f5d8570b80a7edcc0f2ce11c7545783b2895f45348bfe389",
+      "1285005e3f204b19fa7e9afeeea5a4aac3b229bbc8c5cebe26df81b84ecc5a29",
+      "ENTREE-1234"
+    ];
 
-    const reader = new Html5Qrcode("reader");
+    // Dictionnaire des tickets scannés
+    const scannedTickets = {};
 
-    function scanTicket() {
-      document.getElementById("result").innerText = "";
-      reader.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: 250
-        },
-        (decodedText, decodedResult) => {
-          reader.stop();
-          const now = new Date();
-          if (decodedText in ticketsValides) {
-            if (ticketsValides[decodedText]) {
-              document.getElementById("result").innerHTML =
-                `<span style='color:orange;'>Déjà scanné</span> : ${decodedText}<br>Scané le ${ticketsValides[decodedText]}`;
-            } else {
-              const datetime = now.toLocaleString();
-              ticketsValides[decodedText] = datetime;
-              document.getElementById("result").innerHTML =
-                `<span style='color:green;'>Validé</span> : ${decodedText}<br>Scané le ${datetime}`;
-            }
-          } else {
-            document.getElementById("result").innerHTML =
-              `<span style='color:red;'>Invalide</span> : ${decodedText}`;
-          }
-          document.getElementById("scan-next").style.display = "inline-block";
-        },
-        (errorMessage) => {
-          // Ignorer les erreurs de scan
-        }
-      );
+    function onScanSuccess(qrCodeMessage) {
+      const resultDiv = document.getElementById("result");
+      const ticket = qrCodeMessage.trim();
+
+      // Ticket non valide
+      if (!validTickets.includes(ticket)) {
+        resultDiv.textContent = `❌ Ticket invalide : ${ticket}`;
+        resultDiv.className = "invalid";
+        return;
+      }
+
+      // Ticket déjà scanné
+      if (ticket in scannedTickets) {
+        const info = scannedTickets[ticket];
+        resultDiv.textContent = `❌ Ticket déjà scanné : ${ticket}\n📅 Le ${info.date} à ${info.heure}`;
+        resultDiv.className = "invalid";
+        return;
+      }
+
+      // Nouveau ticket → enregistrement
+      const now = new Date();
+      const date = now.toLocaleDateString("fr-FR");
+      const heure = now.toLocaleTimeString("fr-FR");
+
+      scannedTickets[ticket] = { date, heure };
+
+      resultDiv.textContent = `✅ Ticket validé : ${ticket}\n📅 Le ${date} à ${heure}`;
+      resultDiv.className = "valid";
     }
 
-    document.getElementById("scan-next").addEventListener("click", () => {
-      document.getElementById("scan-next").style.display = "none";
-      scanTicket();
-    });
+    function onScanFailure(error) {
+      // Ignorer les erreurs de scan momentanées
+    }
 
-    scanTicket();
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      onScanSuccess,
+      onScanFailure
+    );
   </script>
 </body>
 </html>
