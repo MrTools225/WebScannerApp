@@ -92,7 +92,7 @@
 
       scannedTickets[ticketId] = { date, heure };
 
-      resultDiv.textContent = `✅ Ticket validé : ${ticketId}\n👤 Nom : ${ticketInfo.nom}\n🎫 Type : ${ticketInfo.type}\n📅 Le ${date} à ${heure}`;
+      resultDiv.textContent = `✅ Ticket validé \n🎫 Ticket : ${ticketInfo.NameTicket}\n ${ticketInfo.format}\n📅 Le ${date} à ${heure}`;
       resultDiv.className = "valid";
     }
 
