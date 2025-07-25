@@ -1,76 +1,87 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Validation de Ticket</title>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scan Ticket</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 20px;
+      background-color: #f5f5f5;
     }
-    #qr-reader {
+    #reader {
       width: 300px;
       margin: auto;
     }
     #result {
       margin-top: 20px;
-      font-size: 24px;
+      font-size: 18px;
       font-weight: bold;
     }
-    .valid {
-      color: green;
-    }
-    .invalid {
-      color: red;
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      font-size: 16px;
     }
   </style>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
-  <h1>Scanner votre Ticket</h1>
-  <div id="qr-reader"></div>
+  <h1>Scanner de Ticket</h1>
+  <div id="reader"></div>
   <div id="result"></div>
+  <button id="scan-next" style="display:none;">Scanner un autre ticket</button>
 
   <script>
-    // Liste des tickets valides
-    const validTickets = ["ticket_001", "cb7e55bc60d6bf55f5d8570b80a7edcc0f2ce11c7545783b2895f45348bfe389", "ticket_003"];
-    const scannedTickets = new Set();
+    const ticketsValides = {
+      "ticket_001": null,
+      "ticket_002": null,
+      "ticket_003": null
+    };
 
-    function onScanSuccess(qrCodeMessage) {
-      const resultDiv = document.getElementById("result");
+    const reader = new Html5Qrcode("reader");
 
-      if (!validTickets.includes(qrCodeMessage)) {
-        resultDiv.textContent = `❌ Ticket invalide (${qrCodeMessage})`;
-        resultDiv.className = "invalid";
-        return;
-      }
-
-      if (scannedTickets.has(qrCodeMessage)) {
-        resultDiv.textContent = `❌ Ticket déjà scanné (${qrCodeMessage})`;
-        resultDiv.className = "invalid";
-        return;
-      }
-
-      scannedTickets.add(qrCodeMessage);
-      resultDiv.textContent = `✅ Ticket validé : ${qrCodeMessage}`;
-      resultDiv.className = "valid";
+    function scanTicket() {
+      document.getElementById("result").innerText = "";
+      reader.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: 250
+        },
+        (decodedText, decodedResult) => {
+          reader.stop();
+          const now = new Date();
+          if (decodedText in ticketsValides) {
+            if (ticketsValides[decodedText]) {
+              document.getElementById("result").innerHTML =
+                `<span style='color:orange;'>Déjà scanné</span> : ${decodedText}<br>Scané le ${ticketsValides[decodedText]}`;
+            } else {
+              const datetime = now.toLocaleString();
+              ticketsValides[decodedText] = datetime;
+              document.getElementById("result").innerHTML =
+                `<span style='color:green;'>Validé</span> : ${decodedText}<br>Scané le ${datetime}`;
+            }
+          } else {
+            document.getElementById("result").innerHTML =
+              `<span style='color:red;'>Invalide</span> : ${decodedText}`;
+          }
+          document.getElementById("scan-next").style.display = "inline-block";
+        },
+        (errorMessage) => {
+          // Ignorer les erreurs de scan
+        }
+      );
     }
 
-    function onScanFailure(error) {
-      // Erreurs ignorées volontairement (ex: échec temporaire du scan)
-    }
+    document.getElementById("scan-next").addEventListener("click", () => {
+      document.getElementById("scan-next").style.display = "none";
+      scanTicket();
+    });
 
-    const html5QrCode = new Html5Qrcode("qr-reader");
-    html5QrCode.start(
-      { facingMode: "environment" }, // caméra arrière
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 }
-      },
-      onScanSuccess,
-      onScanFailure
-    );
+    scanTicket();
   </script>
 </body>
 </html>
