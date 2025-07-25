@@ -47,32 +47,41 @@
   <button id="next-btn" onclick="restartScanner()">Scanner un autre ticket</button>
 
   <script>
-    const validTickets = [
-      "TICKET-001",
-      "cb7e55bc60d6bf55f5d8570b80a7edcc0f2ce11c7545783b2895f45348bfe389",
-      "1285005e3f204b19fa7e9afeeea5a4aac3b229bbc8c5cebe26df81b84ecc5a29",
-      "ENTREE-1234"
-    ];
-
+    let ticketsData = [];
     const scannedTickets = {};
     let html5QrCode;
 
+    // Charger les tickets depuis tickets.json
+    fetch("tickets.json")
+      .then(response => response.json())
+      .then(data => {
+        ticketsData = data;
+        startScanner();
+      })
+      .catch(error => {
+        document.getElementById("result").textContent = "Erreur de chargement des tickets.";
+        console.error("Erreur chargement JSON :", error);
+      });
+
     function onScanSuccess(qrCodeMessage) {
       const resultDiv = document.getElementById("result");
-      const ticket = qrCodeMessage.trim();
+      const ticketId = qrCodeMessage.trim();
 
-      html5QrCode.stop(); // stop le scanner après lecture
-      document.getElementById("next-btn").style.display = "inline-block"; // montrer le bouton
+      html5QrCode.stop(); // Stopper le scanner après un scan
+      document.getElementById("next-btn").style.display = "inline-block";
 
-      if (!validTickets.includes(ticket)) {
-        resultDiv.textContent = `❌ Ticket invalide : ${ticket}`;
+      // Recherche du ticket dans le JSON
+      const ticketInfo = ticketsData.find(t => t.id === ticketId);
+
+      if (!ticketInfo) {
+        resultDiv.textContent = `❌ Ticket invalide : ${ticketId}`;
         resultDiv.className = "invalid";
         return;
       }
 
-      if (ticket in scannedTickets) {
-        const info = scannedTickets[ticket];
-        resultDiv.textContent = `❌ Ticket déjà scanné : ${ticket}\n📅 Le ${info.date} à ${info.heure}`;
+      if (ticketId in scannedTickets) {
+        const info = scannedTickets[ticketId];
+        resultDiv.textContent = `❌ Ticket déjà scanné : ${ticketId}\n📅 Le ${info.date} à ${info.heure}`;
         resultDiv.className = "invalid";
         return;
       }
@@ -81,14 +90,14 @@
       const date = now.toLocaleDateString("fr-FR");
       const heure = now.toLocaleTimeString("fr-FR");
 
-      scannedTickets[ticket] = { date, heure };
+      scannedTickets[ticketId] = { date, heure };
 
-      resultDiv.textContent = `✅ Ticket validé : ${ticket}\n📅 Le ${date} à ${heure}`;
+      resultDiv.textContent = `✅ Ticket validé : ${ticketId}\n👤 Nom : ${ticketInfo.nom}\n🎫 Type : ${ticketInfo.type}\n📅 Le ${date} à ${heure}`;
       resultDiv.className = "valid";
     }
 
     function onScanFailure(error) {
-      // erreur temporaire ignorée
+      // Ignorer erreurs
     }
 
     function startScanner() {
@@ -106,9 +115,6 @@
       document.getElementById("next-btn").style.display = "none";
       startScanner();
     }
-
-    // Lancer le scanner au chargement initial
-    startScanner();
   </script>
 </body>
 </html>
