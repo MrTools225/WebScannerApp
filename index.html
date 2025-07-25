@@ -13,12 +13,24 @@
     #qr-reader {
       width: 300px;
       margin: auto;
+      margin-bottom: 20px;
     }
     #result {
       margin-top: 20px;
       font-size: 20px;
       font-weight: bold;
       white-space: pre-line;
+    }
+    #next-btn {
+      display: none;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
     .valid {
       color: green;
@@ -32,9 +44,9 @@
   <h1>Scanner votre Ticket</h1>
   <div id="qr-reader"></div>
   <div id="result"></div>
+  <button id="next-btn" onclick="restartScanner()">Scanner un autre ticket</button>
 
   <script>
-    // Liste des tickets valides (en texte simple)
     const validTickets = [
       "TICKET-001",
       "cb7e55bc60d6bf55f5d8570b80a7edcc0f2ce11c7545783b2895f45348bfe389",
@@ -42,21 +54,22 @@
       "ENTREE-1234"
     ];
 
-    // Dictionnaire des tickets scannés
     const scannedTickets = {};
+    let html5QrCode;
 
     function onScanSuccess(qrCodeMessage) {
       const resultDiv = document.getElementById("result");
       const ticket = qrCodeMessage.trim();
 
-      // Ticket non valide
+      html5QrCode.stop(); // stop le scanner après lecture
+      document.getElementById("next-btn").style.display = "inline-block"; // montrer le bouton
+
       if (!validTickets.includes(ticket)) {
         resultDiv.textContent = `❌ Ticket invalide : ${ticket}`;
         resultDiv.className = "invalid";
         return;
       }
 
-      // Ticket déjà scanné
       if (ticket in scannedTickets) {
         const info = scannedTickets[ticket];
         resultDiv.textContent = `❌ Ticket déjà scanné : ${ticket}\n📅 Le ${info.date} à ${info.heure}`;
@@ -64,7 +77,6 @@
         return;
       }
 
-      // Nouveau ticket → enregistrement
       const now = new Date();
       const date = now.toLocaleDateString("fr-FR");
       const heure = now.toLocaleTimeString("fr-FR");
@@ -76,19 +88,27 @@
     }
 
     function onScanFailure(error) {
-      // Ignorer les erreurs de scan momentanées
+      // erreur temporaire ignorée
     }
 
-    const html5QrCode = new Html5Qrcode("qr-reader");
-    html5QrCode.start(
-      { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 }
-      },
-      onScanSuccess,
-      onScanFailure
-    );
+    function startScanner() {
+      html5QrCode = new Html5Qrcode("qr-reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess,
+        onScanFailure
+      );
+    }
+
+    function restartScanner() {
+      document.getElementById("result").textContent = "";
+      document.getElementById("next-btn").style.display = "none";
+      startScanner();
+    }
+
+    // Lancer le scanner au chargement initial
+    startScanner();
   </script>
 </body>
 </html>
