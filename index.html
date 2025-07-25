@@ -71,7 +71,7 @@
       document.getElementById("next-btn").style.display = "inline-block";
 
       // Recherche du ticket dans le JSON
-      const ticketInfo = ticketsData.find(t => t.id === ticketId);
+      const ticketInfo = ticketsData.find(t => t.ticketId === ticketId);
 
       if (!ticketInfo) {
         resultDiv.textContent = `❌ Ticket invalide : ${ticketId}`;
