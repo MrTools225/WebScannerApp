@@ -3,7 +3,7 @@ const scannedTickets = {};
 let html5QrCode;
 
 // Charger les tickets depuis tickets.json
-fetch("tickets.json")
+fetch("App/json/tickets.json")
    .then(response => response.json())
    .then(data => {
       ticketsData = data;

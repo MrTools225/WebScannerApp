@@ -1,0 +1,67 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: aqua;
+    background-image: url('../img/IDIA-S-IV.jpg');
+    background-size: cover;           /* L'image couvre tout l'écran */     /* Pas de répétition */
+    background-position: fixed;       /* Centrée */
+    text-align: center;
+    padding: 20px;
+}
+
+#qr-reader {
+	width: 300px;
+	margin: auto;
+	margin-bottom: 20px;
+}
+
+#result {
+	margin-top: 20px;
+	font-size: 20px;
+	background-color: #FFFFFF;
+
+	font-weight: bold;
+	white-space: pre-line;
+}
+
+#next-btn {
+	display: none;
+	margin-top: 20px;
+	padding: 10px 20px;
+	font-size: 16px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.valid {
+	color: green;
+}
+
+.invalid {
+	color: red;
+}
+
+.invalidd {
+	color: rgb(255, 149, 0);
+}
+/*  Footer */
+footer {
+  background-color: #007bff;        /* Bleu foncé professionnel */
+  color: #FFFFFF;                   /* Texte blanc pour contraste */
+  text-align: center;              /* Centrer le texte */
+  padding: 20px 10px;              /* Espacement vertical */
+  font-size: 18px;
+  font-family: 'Segoe UI', sans-serif;
+  position: fixed;                 /* Collé en bas de page */
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  z-index: 999;
+}
+
+footer p {
+  margin: 0.5px;
+  letter-spacing: 0.5px;
+}
