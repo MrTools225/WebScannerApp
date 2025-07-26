@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Validation de Ticket</title>
+  <link rel="stylesheet" href="App/css/style.css">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <header> 
+    <div class="logo-container">
+    <div class="logo-icon">🎟️</div>
+    <div class="logo-text">E-ticket</div> </div>
+  <h1>Scan Ticket</h1>
+  <div id="qr-reader"></div>
+  <div id="result"></div>
+  <button id="next-btn" onclick="restartScanner()">Scanner un autre ticket</button>
+  <footer> <p> &copy; 2025 E-Ticket. Tous droits reserves.</p></footer>
+  <script src="App/js/script.js">  </script>
+</body>
+</html>

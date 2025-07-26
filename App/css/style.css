@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: aqua;
+    background-image: url('../img/IDIA-S-IV.jpg');
+    background-size: cover;           /* L'image couvre tout l'écran */     /* Pas de répétition */
+    background-position: fixed;       /* Centrée */
+    text-align: center;
+    padding: 20px;
+}
+
+#qr-reader {
+	width: 300px;
+	margin: auto;
+	margin-bottom: 20px;
+}
+
+#result {
+	margin-top: 20px;
+	font-size: 20px;
+	background-color: #FFFFFF;
+
+	font-weight: bold;
+	white-space: pre-line;
+}
+
+#next-btn {
+	display: none;
+	margin-top: 20px;
+	padding: 10px 20px;
+	font-size: 16px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.valid {
+	color: green;
+}
+
+.invalid {
+	color: red;
+}
+
+.invalidd {
+	color: rgb(255, 149, 0);
+}
+/*  Footer */
+footer {
+  background-color: #007bff;        /* Bleu foncé professionnel */
+  color: #FFFFFF;                   /* Texte blanc pour contraste */
+  text-align: center;              /* Centrer le texte */
+  padding: 20px 10px;              /* Espacement vertical */
+  font-size: 18px;
+  font-family: 'Segoe UI', sans-serif;
+  position: fixed;                 /* Collé en bas de page */
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  z-index: 999;
+}
+
+footer p {
+  margin: 0.5px;
+  letter-spacing: 0.5px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 10px 20px;
+  background: linear-gradient(to right, #FDBA05, #FF4F00);
+  color: white;
+  border-radius: 12px;
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+  transform: scale(1.03);
+}
+
+.logo-icon {
+  font-size: 2rem;
+  animation: bounce 1.5s infinite;
+}
+
+.logo-text {
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Animation festive */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
